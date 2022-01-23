@@ -1,0 +1,10 @@
+[tool.black]
+line-length = 100
+exclude = '''
+(
+    
+)
+'''
+
+[tool.isort]
+profile = "black"
