@@ -48,7 +48,10 @@ class CameraFeeder:
 
     def read(self) -> Optional[np.ndarray]:
         with self._read_lock:
-            frame = self._frame.copy()
+            if self._frame is None:
+                frame = None
+            else:
+                frame = self._frame.copy()
 
         return frame
 
