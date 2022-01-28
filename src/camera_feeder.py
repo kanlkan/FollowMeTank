@@ -1,14 +1,15 @@
 import logging
-import cv2
-import numpy as np
-from typing import Tuple, Optional
 import threading
 import time
+from typing import Optional
+
+import cv2
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
 
-class CameraFeeder():
+class CameraFeeder:
     CAPTURE_RETRY_MAX: int = 30
 
     def __init__(self, src: str) -> None:
@@ -37,7 +38,6 @@ class CameraFeeder():
                         self._cap = cv2.VideoCapture(self._src)
                         if self._cap.isOpened is False:
                             logger.error("VideoCapture is not opened")
-
 
     def start(self) -> None:
         if self._cap.isOpened:
