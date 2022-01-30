@@ -6,6 +6,8 @@ from typing import Optional
 import cv2
 import numpy as np
 
+from custom_exceptions import CameraFeederInitException
+
 logger = logging.getLogger(__name__)
 
 
@@ -14,12 +16,15 @@ class CameraFeeder:
 
     def __init__(self, src: str) -> None:
         self._src: str = src
-        self._cap = cv2.VideoCapture(self._src)
+        self._cap = cv2.VideoCapture(self._src, cv2.CAP_GSTREAMER)
         self._frame: Optional[np.ndarray] = None
         self._fail_count: int = 0
         self._cap_thread = threading.Thread(target=self._update)
         self._cap_thread_started: bool = False
         self._read_lock = threading.Lock()
+
+    def __del__(self) -> None:
+        self.stop()
 
     def _update(self) -> None:
         while self._cap_thread_started:
@@ -38,6 +43,7 @@ class CameraFeeder:
                         self._cap = cv2.VideoCapture(self._src)
                         if self._cap.isOpened is False:
                             logger.error("VideoCapture is not opened")
+                            raise CameraFeederInitException()
 
     def start(self) -> None:
         if self._cap.isOpened:
@@ -45,6 +51,7 @@ class CameraFeeder:
             self._cap_thread.start()
         else:
             logger.error("VideoCapture is not opened")
+            raise CameraFeederInitException()
 
     def read(self) -> Optional[np.ndarray]:
         with self._read_lock:
@@ -58,3 +65,4 @@ class CameraFeeder:
     def stop(self) -> None:
         self._cap_thread.join()
         self._cap_thread_started = False
+        self._cap.release()
