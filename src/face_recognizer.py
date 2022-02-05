@@ -3,6 +3,7 @@
 import glob
 import logging
 import os
+from enum import Enum
 from typing import List, Tuple
 
 import cv2
@@ -11,9 +12,17 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
+class FaceLabel(Enum):
+    abe_hiroshi = 0
+    hirose_suzu = 1
+    me = 2
+
+
 class FaceRecognizer:
     FACE_RECOGNIZER_MODEL_PATH: str = "./assets/model/face_recognizer.yml"
     FACE_IMAGE_SIZE: Tuple[int, int] = (200, 200)
+    FACE_DETECTION_CONF_TH: float = 0.6
+    FACE_RECOGNITION_CONF_TH: float = 3500.0
 
     def __init__(self) -> None:
         self._detector = cv2.dnn_DetectionModel(
@@ -27,6 +36,7 @@ class FaceRecognizer:
             logger.info("Load Face Recognizer model")
             self._recognizer.read(FaceRecognizer.FACE_RECOGNIZER_MODEL_PATH)
         else:
+            # train images and save face recognition model(yaml)
             cropped_images: List[np.ndarray] = []
             labels: List[int] = []
             # image file name format : face_{label}_{num}.jpg
@@ -34,7 +44,7 @@ class FaceRecognizer:
             for image_path in image_path_list:
                 label = int(image_path.split("_")[1])
                 image = cv2.imread(image_path)
-                bboxes = self.detect(image)
+                _, _, bboxes = self.detect(image)
                 if len(bboxes) == 0:
                     continue
                 x = bboxes[0][0]
@@ -53,9 +63,8 @@ class FaceRecognizer:
             logger.info("Save Face Recognizer model")
             self._recognizer.write(FaceRecognizer.FACE_RECOGNIZER_MODEL_PATH)
 
-    def detect(self, frame: np.ndarray) -> List[List[int]]:
-        _, _, bboxes = self._detector.detect(frame)
-        return bboxes
+    def detect(self, frame: np.ndarray) -> Tuple[List[int], List[float], List[Tuple[int, int, int, int]]]:
+        return self._detector.detect(frame, confThreshold=FaceRecognizer.FACE_DETECTION_CONF_TH)
 
     def recognize(self, image: np.ndarray) -> Tuple[int, float]:
         return self._recognizer.predict(image)

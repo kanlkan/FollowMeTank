@@ -39,11 +39,11 @@ jobs:
           
       - name: black
         run:
-          black .
+          black --check .
       
       - name: isort
         run:
-          isort .
+          isort --check --diff .
       
       - name: flake8
         run:
