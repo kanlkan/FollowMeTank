@@ -1,3 +1,4 @@
+import random
 import signal
 import sys
 import threading
@@ -5,7 +6,6 @@ import time
 from logging import INFO, basicConfig, getLogger, handlers
 
 import cv2
-
 from camera_feeder import CameraFeeder
 from control_tank import ControlTank
 from face_recognizer import FaceRecognizer
@@ -55,23 +55,54 @@ class MainSystem:
         self.stop()
         sys.exit(1)
 
+    def _one_rotate(self):
+        if random.choice((True, False)):
+            self._control_tank.turn_clockwise()
+        else:
+            self._control_tank.turn_counterclockwise()
+        time.sleep(10)
+        self._control_tank.stop()
+
+    def _search_faces(self) -> None:
+        # rotate clockwise little by little
+        self._control_tank.turn_clockwise()
+        time.sleep(0.7)
+        self._control_tank.stop()
+
+    def _follow_me(self, diff: float) -> None:
+        if abs(diff) < 20:
+            # Move forward for zooming target face
+            self._control_tank.move_forward()
+            time.sleep(1)
+            self._control_tank.stop()
+        elif diff > 0:
+            self._control_tank.turn_clockwise()
+            time.sleep(0.7)
+            self._control_tank.stop()
+        else:
+            self._control_tank.turn_clockwise()
+            time.sleep(0.7)
+            self._control_tank.stop()
+
     def _main(self) -> None:
         frame = self._camera_feeder.read()
         if frame is not None:
+            frame_width, frame_height = frame.shape
             logger.info(f"frame.shape: {frame.shape}")
-            cv2.imwrite("./temp/1st_frame.jpg", frame)
+            self._one_rotate()
+
         while frame is not None and self._main_thread_started is True:
             try:
                 faces = self._face_recognier.detect(frame)
                 if len(faces) == 0:
                     logger.debug("no faces")
+                    self._search_faces()
                 else:
+                    logger.debug(f"detect faces: {faces}")
                     for face in faces:
-                        x = face[0]
-                        y = face[1]
-                        w = face[2]
-                        h = face[3]
-                        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 3)
+                        x, y, w, h = face
+                        center = ((x + x + w) / 2, (y + y + h) / 2)
+                        # cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 3)
                         label, conf = self._face_recognier.recognize(
                             cv2.resize(
                                 cv2.cvtColor(frame[y : y + h, x : x + w], cv2.COLOR_RGB2GRAY),
@@ -79,7 +110,11 @@ class MainSystem:
                             )
                         )
                         logger.debug(f"reognize face: {label}, {conf}")
-                    logger.debug(f"detect faces: {faces}")
+                        if conf < FaceRecognizer.CONF_TH:
+                            diff = frame_width / 2 - center[0]
+                            self._follow_me(diff)
+                        else:
+                            self._search_faces()
 
                 frame = self._camera_feeder.read()
             except Exception as ex:
