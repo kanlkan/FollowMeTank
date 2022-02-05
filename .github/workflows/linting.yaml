@@ -32,10 +32,10 @@ jobs:
           
       - name: Install Depedencies
         run: 
-          pip3 install black==21.12b0
-          pip3 install isort==5.10.1
-          pip3 install flake8==4.0.1
-          pip3 install mypy==0.931
+          pip install black==21.12b0
+          pip install isort==5.10.1
+          pip install flake8==4.0.1
+          pip install mypy==0.931
           
       - name: black
         run:
