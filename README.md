@@ -1,2 +1,2 @@
-# ControlTank
-Application for controlling tank on Nvidia Jetson Nano
+# FollowMeTank
+Application for tank with Nvidia Jetson Nano which follow me.
