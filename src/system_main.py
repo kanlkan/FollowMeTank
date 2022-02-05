@@ -6,6 +6,7 @@ import time
 from logging import INFO, basicConfig, getLogger, handlers
 
 import cv2
+
 from camera_feeder import CameraFeeder
 from control_tank import ControlTank
 from face_recognizer import FaceRecognizer
