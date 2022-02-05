@@ -23,9 +23,6 @@ class CameraFeeder:
         self._cap_thread_started: bool = False
         self._read_lock = threading.Lock()
 
-    def __del__(self) -> None:
-        self.stop()
-
     def _update(self) -> None:
         while self._cap_thread_started:
             ret, frame = self._cap.read()
@@ -63,6 +60,6 @@ class CameraFeeder:
         return frame
 
     def stop(self) -> None:
-        self._cap_thread.join()
         self._cap_thread_started = False
+        self._cap_thread.join()
         self._cap.release()

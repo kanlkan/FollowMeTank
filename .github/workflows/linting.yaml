@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
         matrix:
-            python-version: [3.6.7]
+            python-version: [3.6.9]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -32,7 +32,10 @@ jobs:
           
       - name: Install Depedencies
         run: 
-          python3 -m pip install black isort mypy
+          pip install black==21.12b0
+          pip install isort==5.10.1
+          pip install flake8==4.0.1
+          pip install mypy==0.931
           
       - name: black
         run:
@@ -42,6 +45,10 @@ jobs:
         run:
           isort .
       
+      - name: flake8
+        run:
+          flake8 .
+
       - name: mypy
         run:
           mypy .
