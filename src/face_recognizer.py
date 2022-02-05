@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 class FaceRecognizer:
     FACE_RECOGNIZER_MODEL_PATH: str = "./assets/model/face_recognizer.yml"
     FACE_IMAGE_SIZE: Tuple[int, int] = (200, 200)
+    CONF_TH: float = 50.0
 
     def __init__(self) -> None:
         self._detector = cv2.dnn_DetectionModel(
