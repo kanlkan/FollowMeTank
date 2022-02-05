@@ -1,19 +1,20 @@
+import logging
 import random
 import signal
 import sys
 import threading
 import time
-from logging import INFO, basicConfig, getLogger, handlers
+from logging import basicConfig, getLogger, handlers
 
 import cv2
 
 from camera_feeder import CameraFeeder
 from control_tank import ControlTank
-from face_recognizer import FaceRecognizer
+from face_recognizer import FaceLabel, FaceRecognizer
 
 basicConfig(
     format="%(asctime)s %(name)s [%(levelname)s] %(message)s",
-    level=INFO,
+    level=logging.INFO,
     handlers=[handlers.SysLogHandler(address="/dev/log")],
 )
 logger = getLogger(__name__)
@@ -88,13 +89,13 @@ class MainSystem:
     def _main(self) -> None:
         frame = self._camera_feeder.read()
         if frame is not None:
-            frame_width, frame_height = frame.shape
+            frame_height, frame_width, _ = frame.shape
             logger.info(f"frame.shape: {frame.shape}")
             self._one_rotate()
 
         while frame is not None and self._main_thread_started is True:
             try:
-                faces = self._face_recognier.detect(frame)
+                _, _, faces = self._face_recognier.detect(frame)
                 if len(faces) == 0:
                     logger.debug("no faces")
                     self._search_faces()
@@ -111,8 +112,9 @@ class MainSystem:
                             )
                         )
                         logger.debug(f"reognize face: {label}, {conf}")
-                        if conf < FaceRecognizer.CONF_TH:
+                        if label == FaceLabel.me.value and conf < FaceRecognizer.FACE_RECOGNITION_CONF_TH:
                             diff = frame_width / 2 - center[0]
+                            logger.debug("Follow me!")
                             self._follow_me(diff)
                         else:
                             self._search_faces()
