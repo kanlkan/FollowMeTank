@@ -113,7 +113,7 @@ class ControlTank:
 
         return True
 
-    def trun_clockwise(self) -> bool:
+    def turn_clockwise(self) -> bool:
         ret = self._set_gpio(12, 1)
         if ret is False:
             return False
@@ -129,7 +129,7 @@ class ControlTank:
 
         return True
 
-    def trun_counterclockwise(self) -> bool:
+    def turn_counterclockwise(self) -> bool:
         ret = self._set_gpio(12, 0)
         if ret is False:
             return False
