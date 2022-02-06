@@ -24,7 +24,7 @@ Application for caterpillar tank with Nvidia Jetson Nano which follows me.
     * Condensers, Jamper wires, etc
 
 # Wiring
-![Wiring Jetson Nano J41 and ICs](https://github.com/kanlkan/FollowMeTank/blob/main/resorce/Wiring_JetsonNano_ICs.png)
+![Wiring Jetson Nano J41 and ICs](https://github.com/kanlkan/FollowMeTank/blob/main/resource/Wiring_JetsonNano_ICs.png)
 
 # Detail resorce (in Japanese)
 NOT YET
