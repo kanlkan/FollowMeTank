@@ -21,6 +21,9 @@ class ControlTank:
         ret = self._setup_gpio()
         if ret is False:
             return False
+        ret = self.stop()
+        if ret is False:
+            return False
 
         # self._start_pwm_threads()
         return True
