@@ -1,6 +1,10 @@
 # FollowMeTank
 Application for caterpillar tank with Nvidia Jetson Nano which follows me.
 
+# Environment
+* Development on Jetson Nano(Linux Jetson-nano 4.9.140-tegra aarch64 GNU/Linux)
+    * python:3.6.9
+    * OpenCV:4.5.2 (built with face, dnn library)
 # Materials
 * Jetson Nano
     * https://www.nvidia.com/ja-jp/autonomous-machines/embedded-systems/jetson-nano/
@@ -26,6 +30,14 @@ Application for caterpillar tank with Nvidia Jetson Nano which follows me.
 # Wiring
 ![Wiring Jetson Nano J41 and ICs](https://github.com/kanlkan/FollowMeTank/blob/main/resource/Wiring_JetsonNano_ICs.png)
 
+# AI/ComputerVision
+* Face Detector
+    * Object Detection with ResNet10
+        * Face Detector model : https://github.com/sr6033/face-detection-with-OpenCV-and-DNN
+
+* Face Recognizer
+    * Fisher Face
+        * https://docs.opencv.org/4.5.2/d2/de9/classcv_1_1face_1_1FisherFaceRecognizer.html
 # Pictures
 ![FolloMe Tank](https://github.com/kanlkan/FollowMeTank/blob/main/resource/caterpillar.JPG)
 ![Example for moving tank](https://github.com/kanlkan/FollowMeTank/blob/main/resource/follow_me_tank.gif)
