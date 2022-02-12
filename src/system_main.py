@@ -102,7 +102,7 @@ class MainSystem:
             logger.debug("turn_counterclockwise")
             self._control_tank.turn_counterclockwise()
             time.sleep(0.005)
-        
+
         self._control_tank.stop()
         time.sleep(0.05)
 
