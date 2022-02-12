@@ -21,7 +21,7 @@ class FaceLabel(Enum):
 class FaceRecognizer:
     FACE_RECOGNIZER_MODEL_PATH: str = "./assets/model/face_recognizer.yml"
     FACE_IMAGE_SIZE: Tuple[int, int] = (200, 200)
-    FACE_DETECTION_CONF_TH: float = 0.3
+    FACE_DETECTION_CONF_TH: float = 0.4
     FACE_RECOGNITION_CONF_TH: float = 3500.0
 
     def __init__(self) -> None:

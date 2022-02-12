@@ -14,7 +14,7 @@ from face_recognizer import FaceLabel, FaceRecognizer
 
 basicConfig(
     format="%(asctime)s %(name)s [%(levelname)s] %(message)s",
-    level=logging.DEBUG,
+    level=logging.INFO,
     handlers=[handlers.SysLogHandler(address="/dev/log")],
 )
 logger = getLogger(__name__)
@@ -24,7 +24,10 @@ class MainSystem:
     CAPTURE_SRC: str = (
         "nvarguscamerasrc sensor_mode=2 ! nvvidconv ! video/x-raw, " "format=(string)I420 ! videoconvert ! appsink"
     )
-    ALLOW_NO_FACES: int = 5
+    ALLOW_NO_FACES: int = 2
+    DIFF_MAX_AS_CENTER: int = 200
+    FACE_AREA_MAX: int = 25000
+    DEBUG_ON: bool = False
 
     def __init__(self) -> None:
         self._main_thread = threading.Thread(target=self._main)
@@ -67,6 +70,7 @@ class MainSystem:
             self._control_tank.turn_counterclockwise()
         time.sleep(2.5 * times)
         self._control_tank.stop()
+        time.sleep(0.05)
 
     def _search_faces(self) -> None:
         # rotate clockwise little by little
@@ -74,26 +78,33 @@ class MainSystem:
         self._control_tank.turn_clockwise()
         time.sleep(0.05)
         self._control_tank.stop()
+        time.sleep(0.05)
 
-    def _follow_me(self, diff: float) -> None:
+    def _follow_me(self, diff: float, face_area: float) -> None:
         logger.debug("Follow me!")
+        if face_area > MainSystem.FACE_AREA_MAX:
+            logger.debug("arrived")
+            self._rotate(1)
+            self._follow_me_mode = False
+            return
+
         self._follow_me_mode = True
-        if abs(diff) < 200:
+        if abs(diff) < MainSystem.DIFF_MAX_AS_CENTER:
             # Move forward for zooming target face
             logger.debug("move_forward")
             self._control_tank.move_forward()
             time.sleep(2)
-            self._control_tank.stop()
         elif diff < 0:
             logger.debug("turn_clockwise")
             self._control_tank.turn_clockwise()
             time.sleep(0.005)
-            self._control_tank.stop()
         else:
             logger.debug("turn_counterclockwise")
             self._control_tank.turn_counterclockwise()
             time.sleep(0.005)
-            self._control_tank.stop()
+
+        self._control_tank.stop()
+        time.sleep(0.05)
 
     def _main(self) -> None:
         frame = self._camera_feeder.read()
@@ -119,7 +130,8 @@ class MainSystem:
                     for face in faces:
                         x, y, w, h = face
                         center = ((x + x + w) / 2, (y + y + h) / 2)
-                        if logger.level == logging.DEBUG:
+                        face_area = w * h
+                        if MainSystem.DEBUG_ON:
                             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 3)
                             logger.debug(f"save test{img_counter:04}.png")
                             cv2.imwrite(f"./temp/test{img_counter:04}.png", frame)
@@ -136,7 +148,7 @@ class MainSystem:
                         ) or self._follow_me_mode is True:
                             diff = frame_width / 2 - center[0]
                             logger.debug(f"diff: {diff}")
-                            self._follow_me(diff)
+                            self._follow_me(diff, face_area)
                         else:
                             self._search_faces()
 
