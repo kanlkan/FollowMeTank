@@ -19,6 +19,8 @@ class Test_ControlTank:
             self._test_control_tank_2()
         elif test_no == 3:
             self._test_control_tank_3()
+        elif test_no == 4:
+            self._test_control_tank_4()
         else:
             pass
 
