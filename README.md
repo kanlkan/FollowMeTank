@@ -26,5 +26,9 @@ Application for caterpillar tank with Nvidia Jetson Nano which follows me.
 # Wiring
 ![Wiring Jetson Nano J41 and ICs](https://github.com/kanlkan/FollowMeTank/blob/main/resource/Wiring_JetsonNano_ICs.png)
 
+# Pictures
+![FolloMe Tank](https://github.com/kanlkan/FollowMeTank/blob/main/resource/caterpillar.JPG)
+![Example for moving tank](https://github.com/kanlkan/FollowMeTank/blob/main/resource/follow_me_tank.gif)
+
 # Detail resorce (in Japanese)
 NOT YET
