@@ -43,4 +43,4 @@ Application for caterpillar tank with Nvidia Jetson Nano which follows me.
 ![Example for moving tank](https://github.com/kanlkan/FollowMeTank/blob/main/resource/follow_me_tank.gif)
 
 # Detail resorce (in Japanese)
-NOT YET
+https://qiita.com/kanlkan/items/e18a075f1060559b8d7b
